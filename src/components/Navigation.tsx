@@ -13,6 +13,20 @@ export const Navigation = () => {
     { name: "Contact", href: "#contact" },
   ];
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId.replace('#', ''));
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
+  };
+
+  const openWhatsApp = () => {
+    const message = "Hi! I'm interested in scheduling a free consultation for my project.";
+    const whatsappUrl = `https://wa.me/919279066556?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-4">
@@ -24,15 +38,15 @@ export const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => scrollToSection(item.href)}
                 className="text-foreground/80 hover:text-foreground transition-colors"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
-            <Button variant="outline" className="ml-4">
+            <Button variant="outline" className="ml-4" onClick={openWhatsApp}>
               Free Consultation
             </Button>
           </div>
@@ -53,16 +67,15 @@ export const Navigation = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
-                className="block py-2 text-foreground/80 hover:text-foreground transition-colors"
-                onClick={() => setIsOpen(false)}
+                onClick={() => scrollToSection(item.href)}
+                className="block py-2 text-foreground/80 hover:text-foreground transition-colors w-full text-left"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
-            <Button variant="outline" className="mt-4 w-full">
+            <Button variant="outline" className="mt-4 w-full" onClick={openWhatsApp}>
               Free Consultation
             </Button>
           </div>

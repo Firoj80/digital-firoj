@@ -3,6 +3,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Smartphone, Globe, Zap } from "lucide-react";
 
 export const Hero = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background Elements */}
@@ -31,11 +38,19 @@ export const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 fade-in">
-            <Button size="lg" className="gradient-bg group">
+            <Button 
+              size="lg" 
+              className="gradient-bg group"
+              onClick={() => scrollToSection('quiz')}
+            >
               Start Your Project
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button size="lg" variant="outline">
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => window.open('https://digitalfiroj.com/portfolio', '_blank')}
+            >
               View Our Work
             </Button>
           </div>

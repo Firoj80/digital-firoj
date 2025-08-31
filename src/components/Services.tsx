@@ -43,6 +43,13 @@ export const Services = () => {
     }
   ];
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="services" className="py-20 relative">
       <div className="container mx-auto px-4">
@@ -78,7 +85,11 @@ export const Services = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => scrollToSection('contact')}
+                  >
                     Learn More
                   </Button>
                 </CardContent>
@@ -88,7 +99,11 @@ export const Services = () => {
         </div>
 
         <div className="text-center mt-16">
-          <Button size="lg" className="gradient-bg">
+          <Button 
+            size="lg" 
+            className="gradient-bg"
+            onClick={() => scrollToSection('quiz')}
+          >
             Get Free Consultation
           </Button>
         </div>
