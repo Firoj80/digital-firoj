@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Mail, Phone, MessageCircle, Clock, Star } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Contact = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -26,7 +28,7 @@ export const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
@@ -37,9 +39,55 @@ export const Contact = () => {
       return;
     }
 
-    // Create mailto link with form data
-    const subject = `New Project Inquiry from ${formData.firstName} ${formData.lastName}`;
-    const body = `
+    setIsSubmitting(true);
+
+    try {
+      // Save contact message to database
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          company: formData.company || null,
+          project_type: formData.projectType || null,
+          message: formData.message,
+          status: 'new'
+        });
+
+      if (error) throw error;
+
+      // Log email notification request
+      await supabase
+        .from('email_notifications')
+        .insert({
+          recipient_email: 'contact@digitalfiroj.com',
+          subject: `New Contact Message: ${formData.firstName} ${formData.lastName}`,
+          template_type: 'contact_form',
+          status: 'pending'
+        });
+
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you within 24 hours."
+      });
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        company: "",
+        projectType: "",
+        message: ""
+      });
+
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      
+      // Fallback to mailto if database fails
+      const subject = `New Project Inquiry from ${formData.firstName} ${formData.lastName}`;
+      const body = `
 Name: ${formData.firstName} ${formData.lastName}
 Email: ${formData.email}
 Company: ${formData.company || 'Not specified'}
@@ -47,15 +95,18 @@ Project Type: ${formData.projectType || 'Not specified'}
 
 Message:
 ${formData.message}
-    `;
-    
-    const mailtoLink = `mailto:contact@digitalfiroj.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
+      `;
+      
+      const mailtoLink = `mailto:contact@digitalfiroj.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
 
-    toast({
-      title: "Opening email client",
-      description: "Your email client will open with the pre-filled message."
-    });
+      toast({
+        title: "Opening email client",
+        description: "Your email client will open with the pre-filled message."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const openWhatsApp = () => {
@@ -175,6 +226,7 @@ ${formData.message}
                       placeholder="John" 
                       value={formData.firstName}
                       onChange={handleInputChange}
+                      disabled={isSubmitting}
                       required
                     />
                   </div>
@@ -185,6 +237,7 @@ ${formData.message}
                       placeholder="Doe" 
                       value={formData.lastName}
                       onChange={handleInputChange}
+                      disabled={isSubmitting}
                       required
                     />
                   </div>
@@ -198,6 +251,7 @@ ${formData.message}
                     placeholder="john@example.com" 
                     value={formData.email}
                     onChange={handleInputChange}
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
@@ -209,6 +263,7 @@ ${formData.message}
                     placeholder="Your Company Name" 
                     value={formData.company}
                     onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -219,6 +274,7 @@ ${formData.message}
                     placeholder="Website, Mobile App, E-commerce, etc." 
                     value={formData.projectType}
                     onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -230,12 +286,18 @@ ${formData.message}
                     rows={5}
                     value={formData.message}
                     onChange={handleInputChange}
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
 
-                <Button type="submit" className="w-full gradient-bg" size="lg">
-                  Send Message
+                <Button 
+                  type="submit" 
+                  className="w-full gradient-bg" 
+                  size="lg"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">

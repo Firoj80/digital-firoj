@@ -14,7 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string
+          project_type: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message: string
+          project_type?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string
+          project_type?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_notifications: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_email: string
+          sent_at: string | null
+          status: string | null
+          subject: string
+          template_type: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          template_type: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          template_type?: string
+        }
+        Relationships: []
+      }
+      quiz_leads: {
+        Row: {
+          budget: string
+          company: string | null
+          created_at: string
+          email: string
+          features: string
+          id: string
+          name: string
+          project_type: string
+          status: string | null
+          timeline: string
+          updated_at: string
+        }
+        Insert: {
+          budget: string
+          company?: string | null
+          created_at?: string
+          email: string
+          features: string
+          id?: string
+          name: string
+          project_type: string
+          status?: string | null
+          timeline: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: string
+          company?: string | null
+          created_at?: string
+          email?: string
+          features?: string
+          id?: string
+          name?: string
+          project_type?: string
+          status?: string | null
+          timeline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

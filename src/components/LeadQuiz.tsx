@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +6,12 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowRight, ArrowLeft, CheckCircle, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const LeadQuiz = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [answers, setAnswers] = useState({
     projectType: "",
     budget: "",
@@ -88,7 +89,7 @@ export const LeadQuiz = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!answers.name || !answers.email) {
       toast({
         title: "Please fill in all required fields",
@@ -97,25 +98,62 @@ export const LeadQuiz = () => {
       return;
     }
 
-    // Here you would typically send the data to your backend
-    console.log("Quiz submitted:", answers);
-    
-    toast({
-      title: "Thank you for your submission!",
-      description: "We'll contact you within 24 hours with a personalized proposal."
-    });
+    setIsSubmitting(true);
 
-    // Reset form
-    setCurrentStep(0);
-    setAnswers({
-      projectType: "",
-      budget: "",
-      timeline: "",
-      features: "",
-      name: "",
-      email: "",
-      company: ""
-    });
+    try {
+      // Insert quiz lead into database
+      const { error } = await supabase
+        .from('quiz_leads')
+        .insert({
+          name: answers.name,
+          email: answers.email,
+          company: answers.company || null,
+          project_type: answers.projectType,
+          budget: answers.budget,
+          timeline: answers.timeline,
+          features: answers.features,
+          status: 'new'
+        });
+
+      if (error) throw error;
+
+      // Log email notification request
+      await supabase
+        .from('email_notifications')
+        .insert({
+          recipient_email: 'contact@digitalfiroj.com',
+          subject: `New Quiz Lead: ${answers.name}`,
+          template_type: 'quiz_lead',
+          status: 'pending'
+        });
+
+      toast({
+        title: "Thank you for your submission!",
+        description: "We'll contact you within 24 hours with a personalized proposal."
+      });
+
+      // Reset form
+      setCurrentStep(0);
+      setAnswers({
+        projectType: "",
+        budget: "",
+        timeline: "",
+        features: "",
+        name: "",
+        email: "",
+        company: ""
+      });
+
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      toast({
+        title: "Submission failed",
+        description: "Please try again or contact us directly.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progress = ((currentStep + 1) / (questions.length + 1)) * 100;
@@ -210,6 +248,7 @@ export const LeadQuiz = () => {
                         onChange={(e) => handleAnswer("name", e.target.value)}
                         placeholder="Enter your full name"
                         className="mt-1"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -221,6 +260,7 @@ export const LeadQuiz = () => {
                         onChange={(e) => handleAnswer("email", e.target.value)}
                         placeholder="Enter your email address"
                         className="mt-1"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -231,17 +271,22 @@ export const LeadQuiz = () => {
                         onChange={(e) => handleAnswer("company", e.target.value)}
                         placeholder="Enter your company name (optional)"
                         className="mt-1"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
 
                   <div className="flex justify-between pt-6">
-                    <Button variant="outline" onClick={handleBack}>
+                    <Button variant="outline" onClick={handleBack} disabled={isSubmitting}>
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Back
                     </Button>
-                    <Button onClick={handleSubmit} className="gradient-bg">
-                      Get My Custom Quote
+                    <Button 
+                      onClick={handleSubmit} 
+                      className="gradient-bg" 
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Submitting..." : "Get My Custom Quote"}
                       <CheckCircle className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
