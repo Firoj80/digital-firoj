@@ -86,6 +86,54 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolios: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          display_order: number
+          enabled: boolean
+          featured: boolean
+          github_url: string | null
+          id: string
+          image_url: string
+          project_url: string | null
+          technologies: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          display_order?: number
+          enabled?: boolean
+          featured?: boolean
+          github_url?: string | null
+          id?: string
+          image_url: string
+          project_url?: string | null
+          technologies?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          display_order?: number
+          enabled?: boolean
+          featured?: boolean
+          github_url?: string | null
+          id?: string
+          image_url?: string
+          project_url?: string | null
+          technologies?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quiz_leads: {
         Row: {
           budget: string

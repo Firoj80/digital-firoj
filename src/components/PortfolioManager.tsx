@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Plus, Edit, Trash2, ExternalLink, Github, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ImageUpload } from "./ImageUpload";
 
 interface PortfolioItem {
   id: string;
@@ -23,7 +25,9 @@ interface PortfolioItem {
   category: string;
   featured: boolean;
   display_order: number;
-  enabled?: boolean;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export const PortfolioManager = () => {
@@ -183,7 +187,7 @@ export const PortfolioManager = () => {
       category: item.category,
       featured: item.featured,
       display_order: item.display_order,
-      enabled: item.enabled ?? true
+      enabled: item.enabled
     });
     setIsDialogOpen(true);
   };
@@ -213,7 +217,7 @@ export const PortfolioManager = () => {
               Add Portfolio Item
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit' : 'Create'} Portfolio Item</DialogTitle>
               <DialogDescription>
@@ -221,7 +225,7 @@ export const PortfolioManager = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="title">Title</Label>
                   <Input
@@ -254,15 +258,11 @@ export const PortfolioManager = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 />
               </div>
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+              <ImageUpload 
+                onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                currentImageUrl={formData.image_url}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="project_url">Project URL</Label>
                   <Input
@@ -289,7 +289,7 @@ export const PortfolioManager = () => {
                   placeholder="React, Node.js, MongoDB"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="featured"
@@ -333,21 +333,21 @@ export const PortfolioManager = () => {
         {portfolios.map((item) => (
           <Card key={item.id} className={item.enabled === false ? "opacity-60" : ""}>
             <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-lg">{item.title}</CardTitle>
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <CardTitle className="text-lg truncate">{item.title}</CardTitle>
                     {item.featured && <Badge>Featured</Badge>}
                     <Badge variant="outline">{item.category}</Badge>
                     {item.enabled === false && <Badge variant="destructive">Disabled</Badge>}
                   </div>
-                  <CardDescription>{item.description}</CardDescription>
+                  <CardDescription className="line-clamp-2">{item.description}</CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    onClick={() => toggleEnabled(item.id, item.enabled ?? true)}
+                    onClick={() => toggleEnabled(item.id, item.enabled)}
                   >
                     {item.enabled === false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   </Button>
@@ -361,15 +361,23 @@ export const PortfolioManager = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <img src={item.image_url} alt={item.title} className="w-20 h-20 object-cover rounded" />
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <img 
+                  src={item.image_url} 
+                  alt={item.title} 
+                  className="w-20 h-20 object-cover rounded flex-shrink-0"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=80&h=80";
+                  }}
+                />
+                <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap gap-1 mb-2">
                     {item.technologies.map((tech, index) => (
                       <Badge key={index} variant="secondary" className="text-xs">{tech}</Badge>
                     ))}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {item.project_url && (
                       <Button size="sm" variant="outline" asChild>
                         <a href={item.project_url} target="_blank" rel="noopener noreferrer">

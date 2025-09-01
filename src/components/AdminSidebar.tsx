@@ -31,7 +31,7 @@ export const AdminSidebar = ({
   onLogout, 
   stats 
 }: AdminSidebarProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     {
@@ -60,34 +60,41 @@ export const AdminSidebar = ({
     }
   ];
 
+  const handleSectionChange = (section: string) => {
+    onSectionChange(section);
+    setIsOpen(false); // Close mobile menu when section changes
+  };
+
   return (
     <>
-      {/* Mobile menu button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="lg:hidden fixed top-4 left-4 z-50"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-      </Button>
+      {/* Mobile menu button - positioned to not overlap with content */}
+      <div className="lg:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm rounded-md">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsOpen(!isOpen)}
+          className="h-10 w-10 p-0"
+        >
+          {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </Button>
+      </div>
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full bg-background border-r transition-transform duration-300 z-40 ${
+      <div className={`fixed left-0 top-0 h-full bg-background border-r transition-transform duration-300 z-40 w-64 ${
         isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      } ${isOpen ? 'w-64' : 'lg:w-16'}`}>
+      }`}>
         
         {/* Header */}
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
-            {isOpen && <h2 className="text-lg font-semibold">Admin Panel</h2>}
+            <h2 className="text-lg font-semibold">Admin Panel</h2>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="hidden lg:flex"
+              onClick={() => setIsOpen(false)}
+              className="lg:hidden h-8 w-8 p-0"
             >
-              {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -98,20 +105,18 @@ export const AdminSidebar = ({
             <Button
               key={item.id}
               variant={activeSection === item.id ? "default" : "ghost"}
-              className={`w-full justify-start ${!isOpen ? 'px-2' : ''}`}
-              onClick={() => onSectionChange(item.id)}
+              className="w-full justify-start"
+              onClick={() => handleSectionChange(item.id)}
             >
-              <item.icon className={`w-4 h-4 ${isOpen ? 'mr-2' : ''}`} />
-              {isOpen && (
-                <div className="flex items-center justify-between w-full">
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <Badge variant="destructive" className="ml-2">
-                      {item.badge}
-                    </Badge>
-                  )}
-                </div>
-              )}
+              <item.icon className="w-4 h-4 mr-2" />
+              <div className="flex items-center justify-between w-full">
+                <span>{item.label}</span>
+                {item.badge && (
+                  <Badge variant="destructive" className="ml-2">
+                    {item.badge}
+                  </Badge>
+                )}
+              </div>
             </Button>
           ))}
         </div>
@@ -120,11 +125,11 @@ export const AdminSidebar = ({
         <div className="absolute bottom-4 left-4 right-4">
           <Button
             variant="outline"
-            className={`w-full justify-start ${!isOpen ? 'px-2' : ''}`}
+            className="w-full justify-start"
             onClick={onLogout}
           >
-            <LogOut className={`w-4 h-4 ${isOpen ? 'mr-2' : ''}`} />
-            {isOpen && <span>Logout</span>}
+            <LogOut className="w-4 h-4 mr-2" />
+            <span>Logout</span>
           </Button>
         </div>
       </div>

@@ -18,7 +18,9 @@ interface PortfolioItem {
   category: string;
   featured: boolean;
   display_order: number;
-  enabled?: boolean;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export const Portfolio = () => {
@@ -97,6 +99,10 @@ export const Portfolio = () => {
                   src={item.image_url} 
                   alt={item.title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=500&h=300";
+                  }}
                 />
                 {item.featured && (
                   <Badge className="absolute top-4 left-4 bg-accent text-white">
