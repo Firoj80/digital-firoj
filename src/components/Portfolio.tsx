@@ -18,6 +18,7 @@ interface PortfolioItem {
   category: string;
   featured: boolean;
   display_order: number;
+  enabled?: boolean;
 }
 
 export const Portfolio = () => {
@@ -32,8 +33,9 @@ export const Portfolio = () => {
   const fetchPortfolios = async () => {
     try {
       const { data, error } = await supabase
-        .from('portfolios' as any)
+        .from('portfolios')
         .select('*')
+        .eq('enabled', true)
         .order('display_order', { ascending: true });
 
       if (error) throw error;

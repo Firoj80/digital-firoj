@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,7 @@ export const PortfolioManager = () => {
   const fetchPortfolios = async () => {
     try {
       const { data, error } = await supabase
-        .from('portfolios' as any)
+        .from('portfolios')
         .select('*')
         .order('display_order', { ascending: true });
 
@@ -87,7 +86,7 @@ export const PortfolioManager = () => {
 
       if (editingItem) {
         const { error } = await supabase
-          .from('portfolios' as any)
+          .from('portfolios')
           .update(portfolioData)
           .eq('id', editingItem.id);
 
@@ -95,7 +94,7 @@ export const PortfolioManager = () => {
         toast({ title: "Portfolio updated successfully" });
       } else {
         const { error } = await supabase
-          .from('portfolios' as any)
+          .from('portfolios')
           .insert([portfolioData]);
 
         if (error) throw error;
@@ -120,7 +119,7 @@ export const PortfolioManager = () => {
 
     try {
       const { error } = await supabase
-        .from('portfolios' as any)
+        .from('portfolios')
         .delete()
         .eq('id', id);
 
@@ -140,7 +139,7 @@ export const PortfolioManager = () => {
   const toggleEnabled = async (id: string, currentEnabled: boolean) => {
     try {
       const { error } = await supabase
-        .from('portfolios' as any)
+        .from('portfolios')
         .update({ enabled: !currentEnabled })
         .eq('id', id);
 
