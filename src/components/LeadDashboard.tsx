@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,15 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MessageSquare, Mail, Eye, Phone } from "lucide-react";
+import { Users, MessageSquare, Mail, Eye, Phone, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { PortfolioManager } from "./PortfolioManager";
 
 export const LeadDashboard = () => {
   const { toast } = useToast();
   const [quizLeads, setQuizLeads] = useState<any[]>([]);
   const [contactMessages, setContactMessages] = useState<any[]>([]);
   const [emailNotifications, setEmailNotifications] = useState<any[]>([]);
+  const [portfolioCount, setPortfolioCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -24,15 +25,17 @@ export const LeadDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [quizResponse, contactResponse, emailResponse] = await Promise.all([
+      const [quizResponse, contactResponse, emailResponse, portfolioResponse] = await Promise.all([
         supabase.from('quiz_leads').select('*').order('created_at', { ascending: false }),
         supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
-        supabase.from('email_notifications').select('*').order('created_at', { ascending: false })
+        supabase.from('email_notifications').select('*').order('created_at', { ascending: false }),
+        supabase.from('portfolios').select('*', { count: 'exact' })
       ]);
 
       if (quizResponse.data) setQuizLeads(quizResponse.data);
       if (contactResponse.data) setContactMessages(contactResponse.data);
       if (emailResponse.data) setEmailNotifications(emailResponse.data);
+      if (portfolioResponse.count) setPortfolioCount(portfolioResponse.count);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -109,11 +112,11 @@ export const LeadDashboard = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Lead Management Dashboard</h1>
-        <p className="text-muted-foreground">Manage your leads and contact messages</p>
+        <p className="text-muted-foreground">Manage your leads, contact messages, and portfolio</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Quiz Leads</CardTitle>
@@ -136,6 +139,19 @@ export const LeadDashboard = () => {
             <div className="text-2xl font-bold">{contactMessages.length}</div>
             <p className="text-xs text-muted-foreground">
               {contactMessages.filter(m => m.status === 'new').length} unread messages
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Portfolio Items</CardTitle>
+            <Briefcase className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{portfolioCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Total portfolio items
             </p>
           </CardContent>
         </Card>
@@ -184,6 +200,7 @@ export const LeadDashboard = () => {
         <TabsList>
           <TabsTrigger value="quiz-leads">Quiz Leads</TabsTrigger>
           <TabsTrigger value="contact-messages">Contact Messages</TabsTrigger>
+          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
           <TabsTrigger value="email-logs">Email Logs</TabsTrigger>
         </TabsList>
 
@@ -332,6 +349,10 @@ export const LeadDashboard = () => {
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        <TabsContent value="portfolio" className="space-y-4">
+          <PortfolioManager />
         </TabsContent>
 
         <TabsContent value="email-logs" className="space-y-4">
