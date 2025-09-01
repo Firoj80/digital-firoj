@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, ExternalLink, Github } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Github, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +24,7 @@ interface PortfolioItem {
   category: string;
   featured: boolean;
   display_order: number;
+  enabled?: boolean;
 }
 
 export const PortfolioManager = () => {
@@ -41,7 +42,8 @@ export const PortfolioManager = () => {
     technologies: '',
     category: '',
     featured: false,
-    display_order: 0
+    display_order: 0,
+    enabled: true
   });
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export const PortfolioManager = () => {
   const fetchPortfolios = async () => {
     try {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('portfolios' as any)
         .select('*')
         .order('display_order', { ascending: true });
 
@@ -79,12 +81,13 @@ export const PortfolioManager = () => {
         technologies: formData.technologies.split(',').map(t => t.trim()),
         category: formData.category,
         featured: formData.featured,
-        display_order: formData.display_order
+        display_order: formData.display_order,
+        enabled: formData.enabled
       };
 
       if (editingItem) {
         const { error } = await supabase
-          .from('portfolios')
+          .from('portfolios' as any)
           .update(portfolioData)
           .eq('id', editingItem.id);
 
@@ -92,7 +95,7 @@ export const PortfolioManager = () => {
         toast({ title: "Portfolio updated successfully" });
       } else {
         const { error } = await supabase
-          .from('portfolios')
+          .from('portfolios' as any)
           .insert([portfolioData]);
 
         if (error) throw error;
@@ -117,7 +120,7 @@ export const PortfolioManager = () => {
 
     try {
       const { error } = await supabase
-        .from('portfolios')
+        .from('portfolios' as any)
         .delete()
         .eq('id', id);
 
@@ -134,6 +137,26 @@ export const PortfolioManager = () => {
     }
   };
 
+  const toggleEnabled = async (id: string, currentEnabled: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('portfolios' as any)
+        .update({ enabled: !currentEnabled })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      toast({ title: `Portfolio ${!currentEnabled ? 'enabled' : 'disabled'} successfully` });
+      fetchPortfolios();
+    } catch (error) {
+      console.error('Error updating portfolio:', error);
+      toast({
+        title: "Error updating portfolio",
+        variant: "destructive"
+      });
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -144,7 +167,8 @@ export const PortfolioManager = () => {
       technologies: '',
       category: '',
       featured: false,
-      display_order: 0
+      display_order: 0,
+      enabled: true
     });
   };
 
@@ -159,7 +183,8 @@ export const PortfolioManager = () => {
       technologies: item.technologies.join(', '),
       category: item.category,
       featured: item.featured,
-      display_order: item.display_order
+      display_order: item.display_order,
+      enabled: item.enabled ?? true
     });
     setIsDialogOpen(true);
   };
@@ -265,7 +290,7 @@ export const PortfolioManager = () => {
                   placeholder="React, Node.js, MongoDB"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="featured"
@@ -273,6 +298,14 @@ export const PortfolioManager = () => {
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
                   />
                   <Label htmlFor="featured">Featured</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="enabled"
+                    checked={formData.enabled}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enabled: checked }))}
+                  />
+                  <Label htmlFor="enabled">Enabled</Label>
                 </div>
                 <div>
                   <Label htmlFor="display_order">Display Order</Label>
@@ -299,7 +332,7 @@ export const PortfolioManager = () => {
 
       <div className="grid gap-4">
         {portfolios.map((item) => (
-          <Card key={item.id}>
+          <Card key={item.id} className={item.enabled === false ? "opacity-60" : ""}>
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -307,10 +340,18 @@ export const PortfolioManager = () => {
                     <CardTitle className="text-lg">{item.title}</CardTitle>
                     {item.featured && <Badge>Featured</Badge>}
                     <Badge variant="outline">{item.category}</Badge>
+                    {item.enabled === false && <Badge variant="destructive">Disabled</Badge>}
                   </div>
                   <CardDescription>{item.description}</CardDescription>
                 </div>
                 <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => toggleEnabled(item.id, item.enabled ?? true)}
+                  >
+                    {item.enabled === false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </Button>
                   <Button size="sm" variant="outline" onClick={() => openEditDialog(item)}>
                     <Edit className="w-4 h-4" />
                   </Button>

@@ -32,7 +32,7 @@ export const Portfolio = () => {
   const fetchPortfolios = async () => {
     try {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('portfolios' as any)
         .select('*')
         .order('display_order', { ascending: true });
 
