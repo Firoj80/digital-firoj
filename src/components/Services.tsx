@@ -51,9 +51,9 @@ export const Services = () => {
   };
 
   return (
-    <section id="services" className="py-20 relative">
+    <section id="services" className="py-12 md:py-16 relative">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Our <span className="gradient-text">Services</span>
           </h2>
