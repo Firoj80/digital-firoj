@@ -11,7 +11,7 @@ export const Hero = () => {
   };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 md:pt-20">
+    <section id="home" className="flex items-center justify-center relative overflow-hidden pt-16 md:pt-20 pb-8 md:pb-12">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl"></div>
@@ -37,7 +37,7 @@ export const Hero = () => {
             Expert development for web and mobile platforms.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 md:mb-12 fade-in">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 md:mb-8 fade-in">
             <Button 
               size="lg" 
               className="gradient-bg group"
@@ -55,7 +55,7 @@ export const Hero = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 md:mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 md:mt-8">
             <div className="glass p-6 rounded-lg floating">
               <Globe className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Web Development</h3>
