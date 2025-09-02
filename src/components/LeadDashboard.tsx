@@ -28,6 +28,8 @@ export const LeadDashboard = () => {
 
   const fetchData = async () => {
     try {
+      console.log('Fetching dashboard data...');
+      
       const [quizResponse, contactResponse, emailResponse, portfolioResponse] = await Promise.all([
         supabase.from('quiz_leads').select('*').order('created_at', { ascending: false }),
         supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
@@ -35,10 +37,21 @@ export const LeadDashboard = () => {
         supabase.from('portfolios').select('*', { count: 'exact' })
       ]);
 
-      if (quizResponse.data) setQuizLeads(quizResponse.data);
-      if (contactResponse.data) setContactMessages(contactResponse.data);
+      console.log('Quiz leads response:', quizResponse);
+      console.log('Contact messages response:', contactResponse);
+      console.log('Email notifications response:', emailResponse);
+      console.log('Portfolio response:', portfolioResponse);
+
+      if (quizResponse.data) {
+        console.log('Setting quiz leads:', quizResponse.data);
+        setQuizLeads(quizResponse.data);
+      }
+      if (contactResponse.data) {
+        console.log('Setting contact messages:', contactResponse.data);
+        setContactMessages(contactResponse.data);
+      }
       if (emailResponse.data) setEmailNotifications(emailResponse.data);
-      if (portfolioResponse.count) setPortfolioCount(portfolioResponse.count);
+      if (portfolioResponse.count !== null) setPortfolioCount(portfolioResponse.count);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -132,7 +145,7 @@ export const LeadDashboard = () => {
         return (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="text-2xl font-bold">Quiz Leads</h2>
+              <h2 className="text-2xl font-bold">Quiz Leads ({quizLeads.length})</h2>
               <Input
                 placeholder="Search leads..."
                 value={searchTerm}
@@ -141,83 +154,91 @@ export const LeadDashboard = () => {
               />
             </div>
             
-            <div className="space-y-4">
-              {filteredQuizLeads.map((lead) => (
-                <Card key={lead.id}>
-                  <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg truncate">{lead.name}</CardTitle>
-                        <CardDescription className="truncate">{lead.email}</CardDescription>
+            {filteredQuizLeads.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No quiz leads found.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {filteredQuizLeads.map((lead) => (
+                  <Card key={lead.id}>
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <CardTitle className="text-lg truncate">{lead.name}</CardTitle>
+                          <CardDescription className="truncate">{lead.email}</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <Badge className={getStatusColor(lead.status)}>
+                            {lead.status}
+                          </Badge>
+                          <Select
+                            value={lead.status}
+                            onValueChange={(value) => updateLeadStatus(lead.id, value, 'quiz')}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">New</SelectItem>
+                              <SelectItem value="contacted">Contacted</SelectItem>
+                              <SelectItem value="qualified">Qualified</SelectItem>
+                              <SelectItem value="converted">Converted</SelectItem>
+                              <SelectItem value="closed">Closed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge className={getStatusColor(lead.status)}>
-                          {lead.status}
-                        </Badge>
-                        <Select
-                          value={lead.status}
-                          onValueChange={(value) => updateLeadStatus(lead.id, value, 'quiz')}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="new">New</SelectItem>
-                            <SelectItem value="contacted">Contacted</SelectItem>
-                            <SelectItem value="qualified">Qualified</SelectItem>
-                            <SelectItem value="converted">Converted</SelectItem>
-                            <SelectItem value="closed">Closed</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium">Project:</span>
+                          <p className="truncate">{lead.project_type}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium">Budget:</span>
+                          <p className="truncate">{lead.budget}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium">Timeline:</span>
+                          <p className="truncate">{lead.timeline}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium">Features:</span>
+                          <p className="truncate">{lead.features}</p>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium">Project:</span>
-                        <p className="truncate">{lead.project_type}</p>
+                      {lead.company && (
+                        <div className="mt-2">
+                          <span className="font-medium text-sm">Company:</span>
+                          <p className="text-sm truncate">{lead.company}</p>
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={`mailto:${lead.email}`}>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Email
+                          </a>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={`https://wa.me/919279066553?text=Hi ${lead.name}, thank you for your interest in our services!`} target="_blank">
+                            <Phone className="w-4 h-4 mr-2" />
+                            WhatsApp
+                          </a>
+                        </Button>
                       </div>
-                      <div>
-                        <span className="font-medium">Budget:</span>
-                        <p className="truncate">{lead.budget}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium">Timeline:</span>
-                        <p className="truncate">{lead.timeline}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium">Features:</span>
-                        <p className="truncate">{lead.features}</p>
-                      </div>
-                    </div>
-                    {lead.company && (
-                      <div className="mt-2">
-                        <span className="font-medium text-sm">Company:</span>
-                        <p className="text-sm truncate">{lead.company}</p>
-                      </div>
-                    )}
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`mailto:${lead.email}`}>
-                          <Mail className="w-4 h-4 mr-2" />
-                          Email
-                        </a>
-                      </Button>
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`https://wa.me/919279066556?text=Hi ${lead.name}, thank you for your interest in our services!`} target="_blank">
-                          <Phone className="w-4 h-4 mr-2" />
-                          WhatsApp
-                        </a>
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Created: {new Date(lead.created_at).toLocaleString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Created: {new Date(lead.created_at).toLocaleString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -225,7 +246,7 @@ export const LeadDashboard = () => {
         return (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="text-2xl font-bold">Contact Messages</h2>
+              <h2 className="text-2xl font-bold">Contact Messages ({contactMessages.length})</h2>
               <Input
                 placeholder="Search messages..."
                 value={searchTerm}
@@ -234,74 +255,82 @@ export const LeadDashboard = () => {
               />
             </div>
             
-            <div className="space-y-4">
-              {filteredContactMessages.map((message) => (
-                <Card key={message.id}>
-                  <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg truncate">{message.first_name} {message.last_name}</CardTitle>
-                        <CardDescription className="truncate">{message.email}</CardDescription>
+            {filteredContactMessages.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No contact messages found.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {filteredContactMessages.map((message) => (
+                  <Card key={message.id}>
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <CardTitle className="text-lg truncate">{message.first_name} {message.last_name}</CardTitle>
+                          <CardDescription className="truncate">{message.email}</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <Badge className={getStatusColor(message.status)}>
+                            {message.status}
+                          </Badge>
+                          <Select
+                            value={message.status}
+                            onValueChange={(value) => updateLeadStatus(message.id, value, 'contact')}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">New</SelectItem>
+                              <SelectItem value="read">Read</SelectItem>
+                              <SelectItem value="replied">Replied</SelectItem>
+                              <SelectItem value="closed">Closed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge className={getStatusColor(message.status)}>
-                          {message.status}
-                        </Badge>
-                        <Select
-                          value={message.status}
-                          onValueChange={(value) => updateLeadStatus(message.id, value, 'contact')}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="new">New</SelectItem>
-                            <SelectItem value="read">Read</SelectItem>
-                            <SelectItem value="replied">Replied</SelectItem>
-                            <SelectItem value="closed">Closed</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    </CardHeader>
+                    <CardContent>
+                      {message.company && (
+                        <div className="mb-2">
+                          <span className="font-medium text-sm">Company:</span>
+                          <p className="text-sm truncate">{message.company}</p>
+                        </div>
+                      )}
+                      {message.project_type && (
+                        <div className="mb-2">
+                          <span className="font-medium text-sm">Project Type:</span>
+                          <p className="text-sm truncate">{message.project_type}</p>
+                        </div>
+                      )}
+                      <div className="mb-4">
+                        <span className="font-medium text-sm">Message:</span>
+                        <p className="text-sm mt-1 p-3 bg-secondary/50 rounded break-words">{message.message}</p>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {message.company && (
-                      <div className="mb-2">
-                        <span className="font-medium text-sm">Company:</span>
-                        <p className="text-sm truncate">{message.company}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={`mailto:${message.email}`}>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Reply
+                          </a>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={`https://wa.me/919279066553?text=Hi ${message.first_name}, thank you for reaching out!`} target="_blank">
+                            <Phone className="w-4 h-4 mr-2" />
+                            WhatsApp
+                          </a>
+                        </Button>
                       </div>
-                    )}
-                    {message.project_type && (
-                      <div className="mb-2">
-                        <span className="font-medium text-sm">Project Type:</span>
-                        <p className="text-sm truncate">{message.project_type}</p>
-                      </div>
-                    )}
-                    <div className="mb-4">
-                      <span className="font-medium text-sm">Message:</span>
-                      <p className="text-sm mt-1 p-3 bg-secondary/50 rounded break-words">{message.message}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`mailto:${message.email}`}>
-                          <Mail className="w-4 h-4 mr-2" />
-                          Reply
-                        </a>
-                      </Button>
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`https://wa.me/919279066556?text=Hi ${message.first_name}, thank you for reaching out!`} target="_blank">
-                          <Phone className="w-4 h-4 mr-2" />
-                          WhatsApp
-                        </a>
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Created: {new Date(message.created_at).toLocaleString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Created: {new Date(message.created_at).toLocaleString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -323,8 +352,7 @@ export const LeadDashboard = () => {
       />
       
       <main className="lg:ml-64 transition-all duration-300">
-        {/* Add padding top on mobile to account for the hamburger menu */}
-        <div className="p-4 pt-16 lg:p-8 lg:pt-8">
+        <div className="p-4 pt-20 lg:p-8 lg:pt-8">
           {renderContent()}
         </div>
       </main>

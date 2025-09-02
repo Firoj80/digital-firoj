@@ -1,10 +1,12 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowRight, ArrowLeft, CheckCircle, Target } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowRight, ArrowLeft, CheckCircle, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,87 +14,137 @@ export const LeadQuiz = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [answers, setAnswers] = useState({
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    company: "",
     projectType: "",
     budget: "",
     timeline: "",
-    features: "",
-    name: "",
-    email: "",
-    company: ""
+    features: [] as string[]
   });
 
   const questions = [
     {
-      id: "projectType",
+      id: "contact",
+      title: "Let's get to know you",
+      description: "Tell us about yourself and your project",
+      type: "contact"
+    },
+    {
+      id: "project",
       title: "What type of project do you need?",
+      description: "Select the type of digital solution you're looking for",
       type: "radio",
       options: [
         "Website Development",
-        "Mobile App (iOS/Android)",
-        "E-commerce Store",
-        "Web Application",
-        "Complete Digital Solution"
+        "Mobile App Development",
+        "E-commerce Platform",
+        "Custom Software",
+        "Digital Marketing",
+        "UI/UX Design",
+        "Other"
       ]
     },
     {
       id: "budget",
-      title: "What's your budget range?",
+      title: "What's your project budget?",
+      description: "This helps us tailor our recommendations",
       type: "radio",
       options: [
         "Under $5,000",
         "$5,000 - $15,000",
-        "$15,000 - $30,000",
-        "$30,000 - $50,000",
-        "Above $50,000"
+        "$15,000 - $50,000",
+        "$50,000 - $100,000",
+        "Above $100,000"
       ]
     },
     {
       id: "timeline",
-      title: "When do you need it completed?",
+      title: "When do you need this completed?",
+      description: "Select your preferred timeline",
       type: "radio",
       options: [
-        "ASAP (Rush Job)",
+        "ASAP (Rush project)",
         "Within 1 month",
         "2-3 months",
         "3-6 months",
-        "No specific deadline"
+        "6+ months",
+        "Flexible timeline"
       ]
     },
     {
       id: "features",
-      title: "Which features are most important?",
-      type: "radio",
+      title: "What features do you need?",
+      description: "Select all that apply to your project",
+      type: "checkbox",
       options: [
-        "User Authentication & Profiles",
-        "Payment Processing",
+        "User Authentication",
+        "Payment Integration",
+        "Database Management",
+        "Real-time Features",
+        "API Integration",
         "Admin Dashboard",
-        "Real-time Features (Chat, Notifications)",
-        "Third-party Integrations"
+        "Mobile Responsive",
+        "SEO Optimization",
+        "Analytics & Reporting",
+        "Content Management",
+        "Social Media Integration",
+        "Multi-language Support"
       ]
     }
   ];
 
-  const handleAnswer = (questionId: string, value: string) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleNext = () => {
-    if (currentStep < questions.length) {
-      setCurrentStep(prev => prev + 1);
+  const handleFeatureToggle = (feature: string) => {
+    setFormData(prev => ({
+      ...prev,
+      features: prev.features.includes(feature)
+        ? prev.features.filter(f => f !== feature)
+        : [...prev.features, feature]
+    }));
+  };
+
+  const nextStep = () => {
+    if (currentStep < questions.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const handleBack = () => {
+  const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleSubmit = async () => {
-    if (!answers.name || !answers.email) {
+  const isStepValid = () => {
+    const currentQuestion = questions[currentStep];
+    switch (currentQuestion.id) {
+      case "contact":
+        return formData.name && formData.email;
+      case "project":
+        return formData.projectType;
+      case "budget":
+        return formData.budget;
+      case "timeline":
+        return formData.timeline;
+      case "features":
+        return formData.features.length > 0;
+      default:
+        return true;
+    }
+  };
+
+  const submitQuiz = async () => {
+    if (!isStepValid()) {
       toast({
-        title: "Please fill in all required fields",
+        title: "Please complete all required fields",
         variant: "destructive"
       });
       return;
@@ -101,48 +153,45 @@ export const LeadQuiz = () => {
     setIsSubmitting(true);
 
     try {
-      // Insert quiz lead into database
+      console.log('Submitting quiz lead with data:', formData);
+      
       const { error } = await supabase
         .from('quiz_leads')
         .insert({
-          name: answers.name,
-          email: answers.email,
-          company: answers.company || null,
-          project_type: answers.projectType,
-          budget: answers.budget,
-          timeline: answers.timeline,
-          features: answers.features,
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || null,
+          project_type: formData.projectType,
+          budget: formData.budget,
+          timeline: formData.timeline,
+          features: formData.features.join(', '),
           status: 'new'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving quiz lead:', error);
+        throw error;
+      }
 
-      // Log email notification request
+      console.log('Quiz lead saved successfully');
+
+      // Log email notification
       await supabase
         .from('email_notifications')
         .insert({
           recipient_email: 'contact@digitalfiroj.com',
-          subject: `New Quiz Lead: ${answers.name}`,
+          subject: `New Quiz Lead: ${formData.name}`,
           template_type: 'quiz_lead',
           status: 'pending'
         });
 
       toast({
         title: "Thank you for your submission!",
-        description: "We'll contact you within 24 hours with a personalized proposal."
+        description: "We'll contact you within 24 hours with a custom proposal."
       });
 
-      // Reset form
-      setCurrentStep(0);
-      setAnswers({
-        projectType: "",
-        budget: "",
-        timeline: "",
-        features: "",
-        name: "",
-        email: "",
-        company: ""
-      });
+      // Move to success step
+      setCurrentStep(questions.length);
 
     } catch (error) {
       console.error('Error submitting quiz:', error);
@@ -156,144 +205,193 @@ export const LeadQuiz = () => {
     }
   };
 
-  const progress = ((currentStep + 1) / (questions.length + 1)) * 100;
+  const openWhatsApp = () => {
+    const message = `Hi! I just completed your project quiz. Here are my details:
+Name: ${formData.name}
+Email: ${formData.email}
+Project: ${formData.projectType}
+Budget: ${formData.budget}
+Timeline: ${formData.timeline}
+
+I'd like to discuss my project further.`;
+    
+    const whatsappUrl = `https://wa.me/919279066553?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  // Success screen
+  if (currentStep >= questions.length) {
+    return (
+      <section id="quiz" className="py-20 relative">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-2xl mx-auto glass border-0">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
+              <p className="text-muted-foreground mb-6">
+                We've received your project details and will prepare a custom proposal for you. 
+                Our team will contact you within 24 hours.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button className="gradient-bg" onClick={openWhatsApp}>
+                  Chat on WhatsApp
+                </Button>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Start New Quiz
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+
+  const currentQuestion = questions[currentStep];
+  const progress = ((currentStep + 1) / questions.length) * 100;
 
   return (
     <section id="quiz" className="py-20 relative">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full glass mb-6">
-            <Target className="w-4 h-4 mr-2 text-accent" />
-            <span className="text-sm">Free Project Assessment</span>
-          </div>
+        <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Get Your <span className="gradient-text">Custom Quote</span>
+            Get Your <span className="gradient-text">Free Quote</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Answer a few quick questions to receive a personalized proposal and timeline for your project
+            Answer a few quick questions to receive a personalized proposal for your project
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto">
-          <Card className="glass border-0">
-            <CardHeader>
-              <div className="w-full bg-secondary rounded-full h-2 mb-4">
-                <div 
-                  className="gradient-bg h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                ></div>
+        <Card className="max-w-2xl mx-auto glass border-0">
+          <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {questions.length}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {Math.round(progress)}% Complete
+              </span>
+            </div>
+            <div className="w-full bg-secondary rounded-full h-2 mb-4">
+              <div 
+                className="gradient-bg h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <CardTitle className="text-xl">{currentQuestion.title}</CardTitle>
+            <CardDescription>{currentQuestion.description}</CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {currentQuestion.type === "contact" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="company">Company Name (Optional)</Label>
+                  <Input
+                    id="company"
+                    placeholder="Your Company"
+                    value={formData.company}
+                    onChange={(e) => handleInputChange("company", e.target.value)}
+                  />
+                </div>
               </div>
-              <CardTitle className="text-center">
-                Step {currentStep + 1} of {questions.length + 1}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {currentStep < questions.length ? (
-                <>
-                  <div className="text-center">
-                    <h3 className="text-2xl font-semibold mb-6">
-                      {questions[currentStep].title}
-                    </h3>
-                    
-                    <RadioGroup
-                      value={answers[questions[currentStep].id as keyof typeof answers]}
-                      onValueChange={(value) => handleAnswer(questions[currentStep].id, value)}
-                      className="text-left space-y-4"
-                    >
-                      {questions[currentStep].options.map((option, index) => (
-                        <div key={index} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                          <RadioGroupItem value={option} id={`option-${index}`} />
-                          <Label htmlFor={`option-${index}`} className="cursor-pointer flex-1">
-                            {option}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
+            )}
 
-                  <div className="flex justify-between pt-6">
-                    <Button 
-                      variant="outline" 
-                      onClick={handleBack}
-                      disabled={currentStep === 0}
-                    >
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                    <Button 
-                      onClick={handleNext}
-                      disabled={!answers[questions[currentStep].id as keyof typeof answers]}
-                      className="gradient-bg"
-                    >
-                      Next
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+            {currentQuestion.type === "radio" && (
+              <RadioGroup
+                value={formData[currentQuestion.id as keyof typeof formData] as string}
+                onValueChange={(value) => handleInputChange(currentQuestion.id, value)}
+              >
+                {currentQuestion.options?.map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={option} />
+                    <Label htmlFor={option} className="cursor-pointer">
+                      {option}
+                    </Label>
                   </div>
-                </>
+                ))}
+              </RadioGroup>
+            )}
+
+            {currentQuestion.type === "checkbox" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentQuestion.options?.map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option}
+                      checked={formData.features.includes(option)}
+                      onCheckedChange={() => handleFeatureToggle(option)}
+                    />
+                    <Label htmlFor={option} className="cursor-pointer text-sm">
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex justify-between pt-6">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
+
+              {currentStep === questions.length - 1 ? (
+                <Button
+                  className="gradient-bg"
+                  onClick={submitQuiz}
+                  disabled={!isStepValid() || isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Get My Quote"}
+                  <Star className="w-4 h-4 ml-2" />
+                </Button>
               ) : (
-                <>
-                  <div className="text-center">
-                    <CheckCircle className="w-16 h-16 text-accent mx-auto mb-6" />
-                    <h3 className="text-2xl font-semibold mb-6">
-                      Almost Done! Tell us about yourself
-                    </h3>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Full Name *</Label>
-                      <Input
-                        id="name"
-                        value={answers.name}
-                        onChange={(e) => handleAnswer("name", e.target.value)}
-                        placeholder="Enter your full name"
-                        className="mt-1"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email Address *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={answers.email}
-                        onChange={(e) => handleAnswer("email", e.target.value)}
-                        placeholder="Enter your email address"
-                        className="mt-1"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="company">Company Name</Label>
-                      <Input
-                        id="company"
-                        value={answers.company}
-                        onChange={(e) => handleAnswer("company", e.target.value)}
-                        placeholder="Enter your company name (optional)"
-                        className="mt-1"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between pt-6">
-                    <Button variant="outline" onClick={handleBack} disabled={isSubmitting}>
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                    <Button 
-                      onClick={handleSubmit} 
-                      className="gradient-bg" 
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Submitting..." : "Get My Custom Quote"}
-                      <CheckCircle className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
-                </>
+                <Button
+                  className="gradient-bg"
+                  onClick={nextStep}
+                  disabled={!isStepValid()}
+                >
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="text-center mt-8">
+          <p className="text-sm text-muted-foreground">
+            🔒 Your information is secure and will never be shared with third parties
+          </p>
         </div>
       </div>
     </section>

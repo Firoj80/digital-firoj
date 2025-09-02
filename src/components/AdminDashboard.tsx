@@ -18,7 +18,7 @@ export const AdminDashboard = ({ stats }: AdminDashboardProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Dashboard Overview</h2>
+        <h2 className="text-3xl font-bold mb-2">Digital Firoj Dashboard</h2>
         <p className="text-muted-foreground">Welcome back! Here's what's happening with your business.</p>
       </div>
 

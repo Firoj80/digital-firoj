@@ -42,6 +42,8 @@ export const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting contact form with data:', formData);
+      
       // Save contact message to database
       const { error } = await supabase
         .from('contact_messages')
@@ -55,7 +57,12 @@ export const Contact = () => {
           status: 'new'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving contact message:', error);
+        throw error;
+      }
+
+      console.log('Contact message saved successfully');
 
       // Log email notification request
       await supabase
@@ -111,7 +118,7 @@ ${formData.message}
 
   const openWhatsApp = () => {
     const message = "Hi! I'm interested in your digital services. Can we schedule a free consultation?";
-    const whatsappUrl = `https://wa.me/919279066556?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919279066553?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -168,10 +175,10 @@ ${formData.message}
                 <div>
                   <h4 className="font-semibold">Call Us</h4>
                   <a 
-                    href="tel:+919279066556" 
+                    href="tel:+919279066553" 
                     className="text-muted-foreground hover:text-accent transition-colors"
                   >
-                    +91 92790 66556
+                    +91 92790 66553
                   </a>
                 </div>
               </div>

@@ -67,13 +67,13 @@ export const AdminSidebar = ({
 
   return (
     <>
-      {/* Mobile menu button - positioned to not overlap with content */}
-      <div className="lg:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm rounded-md">
+      {/* Mobile menu button - fixed positioning */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={() => setIsOpen(!isOpen)}
-          className="h-10 w-10 p-0"
+          className="h-10 w-10 p-0 bg-background/95 backdrop-blur-sm shadow-lg"
         >
           {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </Button>
@@ -87,7 +87,7 @@ export const AdminSidebar = ({
         {/* Header */}
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Admin Panel</h2>
+            <h2 className="text-lg font-semibold">Digital Firoj</h2>
             <Button
               variant="ghost"
               size="sm"
