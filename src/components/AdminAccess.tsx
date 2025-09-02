@@ -6,17 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Shield } from "lucide-react";
 import { LeadDashboard } from "./LeadDashboard";
+import { useToast } from "@/hooks/use-toast";
 
 export const AdminAccess = () => {
+  const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Simple password check - in production, use proper authentication
-    if (password === "admin123") {
+    if (username === "Firoj" && password === "Babu@8757") {
       setIsAuthenticated(true);
+      toast({
+        title: "Login successful",
+        description: "Welcome to Digital Firoj Admin Dashboard"
+      });
     } else {
-      alert("Incorrect password");
+      toast({
+        title: "Invalid credentials",
+        description: "Please check your username and password",
+        variant: "destructive"
+      });
     }
   };
 
@@ -31,12 +41,22 @@ export const AdminAccess = () => {
           <div className="mx-auto w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-accent" />
           </div>
-          <CardTitle>Admin Access</CardTitle>
+          <CardTitle>Digital Firoj Admin Access</CardTitle>
           <CardDescription>
-            Enter the admin password to access the lead management dashboard
+            Enter your credentials to access the admin dashboard
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter username"
+            />
+          </div>
           <div>
             <Label htmlFor="password">Password</Label>
             <Input
@@ -44,16 +64,13 @@ export const AdminAccess = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter admin password"
+              placeholder="Enter password"
               onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
           <Button onClick={handleLogin} className="w-full">
             Access Dashboard
           </Button>
-          <p className="text-xs text-muted-foreground text-center">
-            Demo password: admin123
-          </p>
         </CardContent>
       </Card>
     </div>
