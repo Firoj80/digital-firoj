@@ -331,7 +331,7 @@ export const PortfolioManager = () => {
 
       <div className="grid gap-4">
         {portfolios.map((item) => (
-          <Card key={item.id} className={item.enabled === false ? "opacity-60" : ""}>
+          <Card key={item.id} className={`border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300 ${item.enabled === false ? "opacity-60" : ""}`}>
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">

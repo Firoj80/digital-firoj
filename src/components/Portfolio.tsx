@@ -65,7 +65,7 @@ export const Portfolio = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, index) => (
-              <Card key={index} className="glass border-0 animate-pulse">
+              <Card key={index} className="glass border-2 border-blue-500/40 animate-pulse">
                 <div className="aspect-video bg-muted rounded-t-lg"></div>
                 <CardHeader>
                   <div className="h-6 bg-muted rounded mb-2"></div>
@@ -93,7 +93,7 @@ export const Portfolio = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {portfolios.map((item) => (
-            <Card key={item.id} className="glass border-0 overflow-hidden hover:scale-105 transition-transform duration-300">
+            <Card key={item.id} className="glass border-2 border-blue-500/40 overflow-hidden hover:border-blue-400/60 hover:scale-105 transition-all duration-300">
               <div className="aspect-video relative overflow-hidden">
                 <img 
                   src={item.image_url} 

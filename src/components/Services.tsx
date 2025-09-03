@@ -66,7 +66,7 @@ export const Services = () => {
           {services.map((service, index) => {
             const IconComponent = service.icon;
             return (
-              <Card key={index} className="glass border border-blue-500/30 hover:border-blue-400/50 hover:scale-105 transition-all duration-300">
+              <Card key={index} className="glass border-2 border-blue-500/40 hover:border-blue-400/60 hover:scale-105 transition-all duration-300">
                 <CardHeader>
                   <div className="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
                     <IconComponent className="w-6 h-6 text-white" />

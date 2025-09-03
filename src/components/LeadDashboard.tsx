@@ -155,7 +155,7 @@ export const LeadDashboard = () => {
             </div>
             
             {filteredQuizLeads.length === 0 ? (
-              <Card>
+              <Card className="border-2 border-blue-500/40">
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground">No quiz leads found.</p>
                 </CardContent>
@@ -163,7 +163,7 @@ export const LeadDashboard = () => {
             ) : (
               <div className="space-y-4">
                 {filteredQuizLeads.map((lead) => (
-                  <Card key={lead.id}>
+                  <Card key={lead.id} className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">
@@ -256,7 +256,7 @@ export const LeadDashboard = () => {
             </div>
             
             {filteredContactMessages.length === 0 ? (
-              <Card>
+              <Card className="border-2 border-blue-500/40">
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground">No contact messages found.</p>
                 </CardContent>
@@ -264,7 +264,7 @@ export const LeadDashboard = () => {
             ) : (
               <div className="space-y-4">
                 {filteredContactMessages.map((message) => (
-                  <Card key={message.id}>
+                  <Card key={message.id} className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">

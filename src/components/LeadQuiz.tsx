@@ -241,7 +241,7 @@ I'd like to discuss my project further.`;
     return (
       <section id="quiz" className="py-20 relative">
         <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto glass border-0 bg-gradient-to-br from-green-50 to-blue-50">
+          <Card className="max-w-2xl mx-auto glass border-2 border-blue-500/40 bg-gradient-to-br from-green-50 to-blue-50">
             <CardContent className="p-8 text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-white" />
@@ -284,7 +284,7 @@ I'd like to discuss my project further.`;
           </p>
         </div>
 
-        <Card className="max-w-2xl mx-auto glass border-0 shadow-xl">
+        <Card className="max-w-2xl mx-auto glass border-2 border-blue-500/40 shadow-xl">
           <CardHeader>
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-muted-foreground font-medium">

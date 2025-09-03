@@ -213,7 +213,7 @@ ${formData.message}
           </div>
 
           {/* Contact Form */}
-          <Card className="glass border-0">
+          <Card className="glass border-2 border-blue-500/40">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <MessageCircle className="w-5 h-5 mr-2 text-accent" />

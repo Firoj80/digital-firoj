@@ -24,7 +24,7 @@ export const AdminDashboard = ({ stats }: AdminDashboardProps) => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Quiz Leads</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -37,7 +37,7 @@ export const AdminDashboard = ({ stats }: AdminDashboardProps) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Contact Messages</CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
@@ -50,7 +50,7 @@ export const AdminDashboard = ({ stats }: AdminDashboardProps) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Portfolio Items</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
@@ -63,7 +63,7 @@ export const AdminDashboard = ({ stats }: AdminDashboardProps) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-blue-500/40 hover:border-blue-400/60 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />

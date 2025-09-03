@@ -36,7 +36,7 @@ export const AdminAccess = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-2 border-blue-500/40">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-accent" />
