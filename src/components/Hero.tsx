@@ -25,7 +25,7 @@ export const Hero = () => {
             <span className="text-sm">Leading Digital Development Agency</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 md:mb-6 leading-tight fade-in">
+          <h1 className="text-5xl md:text-7xl font-bold mb-4 md:mb-6 leading-tight fade-in text-left md:text-center">
             We Build{" "}
             <span className="gradient-text">Amazing</span>
             <br />
