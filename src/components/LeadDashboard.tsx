@@ -343,7 +343,7 @@ export const LeadDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <AdminSidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}
@@ -351,8 +351,8 @@ export const LeadDashboard = () => {
         stats={stats}
       />
       
-      <main className="lg:ml-64 transition-all duration-300">
-        <div className="p-4 pt-20 lg:p-8 lg:pt-8">
+      <main className="lg:ml-72 transition-all duration-300">
+        <div className="p-6 pt-24 lg:p-8 lg:pt-8">
           {renderContent()}
         </div>
       </main>

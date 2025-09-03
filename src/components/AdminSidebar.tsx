@@ -68,31 +68,39 @@ export const AdminSidebar = ({
   return (
     <>
       {/* Mobile menu button - fixed positioning */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      <div className="lg:hidden fixed top-6 left-6 z-50">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setIsOpen(!isOpen)}
-          className="h-10 w-10 p-0 bg-background/95 backdrop-blur-sm shadow-lg"
+          className="h-12 w-12 p-0 premium-card border-2 border-blue-500/40 hover:border-blue-500/60 shadow-lg"
         >
-          {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
       </div>
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full bg-background border-r transition-transform duration-300 z-40 w-64 ${
+      <div className={`fixed left-0 top-0 h-full premium-card border-r-2 border-blue-500/40 transition-transform duration-300 z-40 w-72 ${
         isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         
         {/* Header */}
-        <div className="p-4 border-b">
+        <div className="p-6 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Digital Firoj</h2>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">DF</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold gradient-text">Digital Firoj</h2>
+                <p className="text-xs text-muted-foreground">Admin Panel</p>
+              </div>
+            </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="lg:hidden h-8 w-8 p-0"
+              className="lg:hidden h-8 w-8 p-0 hover:bg-white/10"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -100,19 +108,23 @@ export const AdminSidebar = ({
         </div>
 
         {/* Navigation */}
-        <div className="p-4 space-y-2">
+        <div className="p-6 space-y-3">
           {menuItems.map((item) => (
             <Button
               key={item.id}
               variant={activeSection === item.id ? "default" : "ghost"}
-              className="w-full justify-start"
+              className={`w-full justify-start h-12 text-left transition-all duration-300 ${
+                activeSection === item.id 
+                  ? "gradient-bg text-white shadow-lg" 
+                  : "hover:bg-white/10 hover:scale-105"
+              }`}
               onClick={() => handleSectionChange(item.id)}
             >
-              <item.icon className="w-4 h-4 mr-2" />
+              <item.icon className="w-5 h-5 mr-3" />
               <div className="flex items-center justify-between w-full">
-                <span>{item.label}</span>
+                <span className="font-medium">{item.label}</span>
                 {item.badge && (
-                  <Badge variant="destructive" className="ml-2">
+                  <Badge variant="destructive" className="ml-2 bg-red-500/20 text-red-400 border-red-500/30">
                     {item.badge}
                   </Badge>
                 )}
@@ -122,14 +134,14 @@ export const AdminSidebar = ({
         </div>
 
         {/* Logout button */}
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="absolute bottom-6 left-6 right-6">
           <Button
             variant="outline"
-            className="w-full justify-start"
+            className="w-full justify-start h-12 border-2 border-red-500/30 hover:border-red-500/60 hover:bg-red-500/10 transition-all duration-300"
             onClick={onLogout}
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span>Logout</span>
+            <LogOut className="w-5 h-5 mr-3" />
+            <span className="font-medium">Logout</span>
           </Button>
         </div>
       </div>

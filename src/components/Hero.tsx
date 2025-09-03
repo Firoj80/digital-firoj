@@ -29,11 +29,11 @@ export const Hero = () => {
             We Build{" "}
             <span className="gradient-text">Amazing</span>
             <br />
-            Digital Experiences
+            <span className="text-4xl md:text-6xl">Digital Experiences</span>
           </h1>
 
-          <p className="text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto fade-in">
-            Transforming ideas into stunning websites and mobile apps that drive results. 
+          <p className="text-xl md:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-3xl mx-auto fade-in leading-relaxed">
+            Transforming ideas into stunning <span className="text-accent font-semibold">websites</span> and <span className="text-primary font-semibold">mobile apps</span> that drive results. 
             Expert development for web and mobile platforms.
           </p>
 
@@ -56,17 +56,17 @@ export const Hero = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 md:mt-8">
-            <div className="glass p-6 rounded-lg floating">
+            <div className="premium-card p-8 rounded-xl floating hover:scale-105 transition-all duration-300">
               <Globe className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Web Development</h3>
               <p className="text-muted-foreground">Modern, responsive websites that convert</p>
             </div>
-            <div className="glass p-6 rounded-lg floating" style={{ animationDelay: '0.2s' }}>
+            <div className="premium-card p-8 rounded-xl floating hover:scale-105 transition-all duration-300" style={{ animationDelay: '0.2s' }}>
               <Smartphone className="w-12 h-12 text-accent mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Mobile Apps</h3>
               <p className="text-muted-foreground">Native iOS & Android applications</p>
             </div>
-            <div className="glass p-6 rounded-lg floating" style={{ animationDelay: '0.4s' }}>
+            <div className="premium-card p-8 rounded-xl floating hover:scale-105 transition-all duration-300" style={{ animationDelay: '0.4s' }}>
               <Zap className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Digital Strategy</h3>
               <p className="text-muted-foreground">Complete digital transformation</p>
