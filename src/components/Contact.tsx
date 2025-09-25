@@ -325,19 +325,12 @@ ${formData.message}
               Join 100+ satisfied clients who've trusted us with their digital transformation
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="gradient-bg"
                 onClick={() => scrollToSection('quiz')}
               >
                 Schedule Free Consultation
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => window.open('https://digitalfiroj.com/portfolio', '_blank')}
-              >
-                View Our Portfolio
               </Button>
             </div>
           </div>

@@ -19,7 +19,7 @@ CREATE TABLE public.portfolios (
 ALTER TABLE public.portfolios ENABLE ROW LEVEL SECURITY;
 
 -- Create policy to allow public read access to portfolios
-CREATE POLICY "Allow public read access to portfolios" ON public.portfolios FOR SELECT WITH CHECK (true);
+CREATE POLICY "Allow public read access to portfolios" ON public.portfolios FOR SELECT USING (true);
 
 -- Create trigger for updated_at
 CREATE TRIGGER update_portfolios_updated_at BEFORE UPDATE ON public.portfolios 

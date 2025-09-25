@@ -134,14 +134,6 @@ export const Portfolio = () => {
                       </a>
                     </Button>
                   )}
-                  {item.github_url && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={item.github_url} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-4 h-4 mr-2" />
-                        Code
-                      </a>
-                    </Button>
-                  )}
                 </div>
               </CardContent>
             </Card>

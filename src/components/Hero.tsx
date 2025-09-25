@@ -38,20 +38,13 @@ export const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 md:mb-8 fade-in">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="gradient-bg group"
               onClick={() => scrollToSection('quiz')}
             >
               Start Your Project
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => window.open('https://digitalfiroj.com/portfolio', '_blank')}
-            >
-              View Our Work
             </Button>
           </div>
 

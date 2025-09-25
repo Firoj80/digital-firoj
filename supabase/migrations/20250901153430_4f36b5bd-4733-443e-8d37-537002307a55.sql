@@ -1,20 +1,6 @@
 
--- Create portfolios table
-CREATE TABLE public.portfolios (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  image_url TEXT NOT NULL,
-  project_url TEXT,
-  github_url TEXT,
-  technologies TEXT[] NOT NULL DEFAULT '{}',
-  category TEXT NOT NULL,
-  featured BOOLEAN NOT NULL DEFAULT false,
-  display_order INTEGER NOT NULL DEFAULT 0,
-  enabled BOOLEAN NOT NULL DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+-- Add missing columns to portfolios table (if they don't exist)
+ALTER TABLE public.portfolios ADD COLUMN IF NOT EXISTS enabled BOOLEAN NOT NULL DEFAULT true;
 
 -- Enable RLS
 ALTER TABLE public.portfolios ENABLE ROW LEVEL SECURITY;
