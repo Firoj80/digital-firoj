@@ -13,5 +13,20 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  },
+  // Performance optimizations
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'admin-user-manager'
+    }
+  },
+  // Optimize for real-time subscriptions if needed
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });

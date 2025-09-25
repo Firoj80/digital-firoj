@@ -2,15 +2,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  MessageSquare, 
-  Briefcase, 
-  LogOut, 
+import {
+  Users,
+  MessageSquare,
+  Briefcase,
+  LogOut,
   BarChart3,
   Menu,
-  X
+  X,
+  Settings
 } from "lucide-react";
+import { AdminUser } from "@/lib/auth";
 
 interface AdminSidebarProps {
   activeSection: string;
@@ -56,6 +58,12 @@ export const AdminSidebar = ({
       id: "portfolio",
       label: "Portfolio",
       icon: Briefcase,
+      badge: null
+    },
+    {
+      id: "admin-users",
+      label: "Admin Users",
+      icon: Settings,
       badge: null
     }
   ];

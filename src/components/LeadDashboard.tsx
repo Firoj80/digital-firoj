@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminDashboard } from "./AdminDashboard";
 import { PortfolioManager } from "./PortfolioManager";
+import { AdminUserManager } from "./AdminUserManager";
 
 export const LeadDashboard = () => {
   const { toast } = useToast();
@@ -100,7 +101,10 @@ export const LeadDashboard = () => {
   };
 
   const handleLogout = () => {
-    window.location.reload();
+    // Clear any local storage or session data if needed
+    localStorage.removeItem('admin_user');
+    // Redirect to login page
+    window.location.href = '/admin';
   };
 
   const stats = {
@@ -336,6 +340,9 @@ export const LeadDashboard = () => {
 
       case 'portfolio':
         return <PortfolioManager />;
+
+      case 'admin-users':
+        return <AdminUserManager />;
 
       default:
         return <AdminDashboard stats={stats} />;

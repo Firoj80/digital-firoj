@@ -134,6 +134,42 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_users: {
+        Row: {
+          id: string
+          username: string
+          email: string
+          password_hash: string
+          full_name: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          last_login_at: string | null
+        }
+        Insert: {
+          id?: string
+          username: string
+          email: string
+          password_hash: string
+          full_name?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          last_login_at?: string | null
+        }
+        Update: {
+          id?: string
+          username?: string
+          email?: string
+          password_hash?: string
+          full_name?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          last_login_at?: string | null
+        }
+        Relationships: []
+      }
       quiz_leads: {
         Row: {
           budget: string
