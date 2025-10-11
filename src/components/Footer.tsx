@@ -80,7 +80,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Mail className="w-5 h-5 text-accent" />
-                <span>hello@digitalfiroj.com</span>
+                <span>contact@digitalfiroj.com</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <MapPin className="w-5 h-5 text-primary" />
@@ -116,9 +116,7 @@ export const Footer = () => {
               © {currentYear} Digital Firoj. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <button className="hover:text-primary transition-colors">Privacy Policy</button>
-              <button className="hover:text-primary transition-colors">Terms of Service</button>
-              <button className="hover:text-primary transition-colors">Cookie Policy</button>
+
             </div>
           </div>
         </div>
